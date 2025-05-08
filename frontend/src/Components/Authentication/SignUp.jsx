@@ -1,6 +1,15 @@
-import { VStack, Field, Input, Button, InputGroup } from "@chakra-ui/react";
-
-import React, { useState } from "react";
+import {
+  VStack,
+  Field,
+  Input,
+  Button,
+  InputGroup,
+  Alert,
+  Box,
+} from "@chakra-ui/react";
+import axios from "axios";
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const SignUp = () => {
   const [name, setName] = useState();
@@ -9,8 +18,95 @@ const SignUp = () => {
   const [confirmPassword, setConfirmPassword] = useState();
   const [pic, setPic] = useState();
   const [show, setShow] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [showToast, setShowToast] = useState(false);
+  const [toastStatus, setToastStatus] = useState();
+  const [toastMessage, setToastMessage] = useState();
+  const navigate = useNavigate();
 
-  const submitHandler =() =>{}
+  const submitHandler = () => {
+    if (!name || !email || !password || !confirmPassword) {
+      setShowToast(true);
+      setToastStatus("error");
+      setToastMessage("Please fill all the details");
+      return;
+    }
+    if (password !== confirmPassword) {
+      setShowToast(true);
+      setToastStatus("error");
+      setToastMessage("Password do not match");
+      return;
+    }
+    try {
+      setLoading(true);
+      const config = {
+        headers: {
+          "Content-type": "application/json",
+        },
+      };
+      const data = axios.post(
+        "/api/user",
+        { name, email, password, pic },
+        config
+      );
+      if (data.status === 200) {
+        localStorage.setItem("userInfo", JSON.stringify(data.data));
+        navigate("/chats");
+        console.log(data);
+      }
+      setLoading(false);
+    } catch (error) {}
+  };
+
+  const uploadCloudaryPic = (file) => {
+    setLoading(true);
+    if (file) {
+      if (file.type === "image/jpeg" || file.type === "image/png") {
+        const data = new FormData();
+        data.append("file", file);
+        data.append("upload_preset", "MERN-CHAT-APP");
+        data.append("cloud_name", "gunjangid");
+        fetch("https://api.cloudinary.com/v1_1/gunjangid/image/upload", {
+          method: "post",
+          body: data,
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            setShowToast(true);
+            setToastStatus("success");
+            setToastMessage("Successfully uploaded image");
+            setPic(data.url.toString());
+            console.log(data.url.toString());
+            setLoading(false);
+          })
+          .catch((err) => {
+            setShowToast(true);
+            setToastStatus("error");
+            setToastMessage("Please Upload a image file ");
+            console.log(err);
+            setLoading(false);
+          });
+      }
+    } else {
+      toast({
+        title: "Please Select an Image!",
+        status: "warning",
+        duration: 5000,
+        isClosable: true,
+        position: "bottom",
+      });
+      console.log("File not found");
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (showToast) {
+      setTimeout(() => {
+        setShowToast(false);
+      }, 4000);
+    }
+  }, [showToast]);
 
   return (
     <VStack spacing="5px">
@@ -93,16 +189,27 @@ const SignUp = () => {
           Upload Picture <Field.RequiredIndicator />
         </Field.Label>
         <Input
-          onChange={(e) => setPic(e.target.files[0])}
+          onChange={(e) => uploadCloudaryPic(e.target.files[0])}
           p="1.5"
           accept="image/*"
           type="file"
         />
       </Field.Root>
 
-      <Button type="submit" w="100%" alignSelf="center" onClick={submitHandler}>
+      <Button
+        loading={loading}
+        w="100%"
+        alignSelf="center"
+        onClick={submitHandler}
+      >
         Sign up
       </Button>
+      {showToast && (
+        <Alert.Root status={toastStatus} inline={false}>
+          <Alert.Indicator />
+          <Alert.Title>{toastMessage}</Alert.Title>
+        </Alert.Root>
+      )}
     </VStack>
   );
 };

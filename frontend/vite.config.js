@@ -5,13 +5,12 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   server: {
     proxy: {
-      "/app/chat": "http://localhost:5000",
-      "/app": {
+      "/api/user": "http://localhost:5000",
+      "/user": {
         target: "https://localhost:5000",
-          changeOrigin: true,
-          secure: false,
-          ws: true,
-      
+        changeOrigin: true,
+        secure: false,
+        ws: true,
       },
     },
   },
