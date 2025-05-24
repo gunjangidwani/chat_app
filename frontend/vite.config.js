@@ -6,6 +6,7 @@ export default defineConfig({
   server: {
     proxy: {
       "/api/user": "http://localhost:5000",
+      "/api/chat": "http://localhost:5000",
       "/user": {
         target: "https://localhost:5000",
         changeOrigin: true,

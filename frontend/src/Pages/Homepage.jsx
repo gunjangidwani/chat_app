@@ -1,10 +1,23 @@
 import { Box, Container, Text, Tabs } from '@chakra-ui/react'
-import React, { useState } from 'react';
-import Login from '../Components/Authentication/SignUp';
-import SignUp from '../Components/Authentication/Login';
+import React, { useState, useEffect } from "react";
+import Login from "../Components/Authentication/SignUp";
+import SignUp from "../Components/Authentication/Login";
+import { useNavigate } from "react-router-dom";
 
 const Homepage = () => {
+  const navigate = useNavigate();
+
   const [value, setValue] = useState("first");
+  useEffect(() => {
+    const userInfo = JSON.parse(localStorage.getItem("userInfo"));
+
+    if (userInfo) {
+      navigate("/chats");
+    } else {
+      navigate("/");
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [navigate]);
   return (
     <Container maxW={"xl"} centerContent>
       <Box
@@ -53,12 +66,16 @@ const Homepage = () => {
             </Tabs.Trigger>
           </Tabs.List>
 
-          <Tabs.Content value="first"><Login /></Tabs.Content>
-          <Tabs.Content value="second"><SignUp /></Tabs.Content>
+          <Tabs.Content value="first">
+            <Login />
+          </Tabs.Content>
+          <Tabs.Content value="second">
+            <SignUp />
+          </Tabs.Content>
         </Tabs.Root>
       </Box>
     </Container>
   );
-}
+};
 
 export default Homepage

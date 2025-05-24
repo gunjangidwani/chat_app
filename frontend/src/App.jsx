@@ -12,20 +12,14 @@ function App() {
 
   return (
     <div className="App">
-      <Router
+      <Routes
         future={{
           v7_startTransition: true,
         }}
       >
-        <Routes
-          future={{
-            v7_startTransition: true,
-          }}
-        >
-          <Route path="/" element={<Homepage />} exact />
-          <Route path="/chats" element={<Chatpage />} />
-        </Routes>
-      </Router>
+        <Route path="/" element={<Homepage />} exact />
+        <Route path="/chats" element={<Chatpage />} />
+      </Routes>
     </div>
   );
 }
