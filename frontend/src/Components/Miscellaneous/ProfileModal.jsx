@@ -9,7 +9,6 @@ import {
 } from "@chakra-ui/react";
 const ProfileModal = ({ children, user }) => {
   const [open, setOpen] = useState(false);
-  console.log(open);
   return (
     <>
       <Dialog.Root lazyMount open={open} onOpenChange={(e) => setOpen(e.open)}>

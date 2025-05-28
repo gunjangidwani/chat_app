@@ -3,17 +3,20 @@ import { ChatState } from "../../Context/ChatProvider";
 import axios from "axios";
 import { Box, Button, Stack, Text } from "@chakra-ui/react";
 import ChatLoading from "./ChatLoading";
-import { getSender } from "../../config/helper";
+import { getSender, getSenderFull } from "../../config/helper";
+import GroupChatModal from "./GroupChatModal";
+import { useSocketContext } from "../../Context/SocketProvider";
 
 const MyChats = () => {
   const [loggedUser, setLoggedUser] = useState();
-  const { selectedChat, setSelectedChat, user, setUser, chats, setChats } =
+  const { selectedChat, setSelectedChat, user, chats, setChats, fetchAgain } =
     ChatState();
-
+  const { onlineUsers } = useSocketContext();
+  console.log(onlineUsers, chats, "......noti");
   useEffect(() => {
     setLoggedUser(JSON.parse(localStorage.getItem("userInfo")));
     fetchChats();
-  }, []);
+  }, [fetchAgain]);
 
   const fetchChats = async () => {
     try {
@@ -52,14 +55,16 @@ const MyChats = () => {
         alignItems="center"
       >
         My chats
-        <Button
-          // ml={5}
-          display="flex"
-          fontSize={{ base: "17px", md: "10px", lg: "17px" }}
-        >
-          New Group Chats
-          <i class="fa-solid fa-plus"></i>
-        </Button>
+        <GroupChatModal user={user}>
+          <Button
+            // ml={5}
+            display="flex"
+            fontSize={{ base: "17px", md: "10px", lg: "17px" }}
+          >
+            New Group Chats
+            <i className="fa-solid fa-plus"></i>
+          </Button>
+        </GroupChatModal>
       </Box>
       <Box
         display="flex"
@@ -85,12 +90,20 @@ const MyChats = () => {
                 py={3}
                 borderRadius="lg"
                 key={chat._id}
+                position="relative"
               >
                 <Text>
                   {!chat.isGroupChat
                     ? getSender(loggedUser, chat.users)
                     : chat.chatName}
                 </Text>
+                {!chat?.isGroupChat &&
+                onlineUsers.length &&
+                onlineUsers.includes(
+                  getSenderFull(loggedUser, chat.users)._id
+                ) ? (
+                  <span className="online-user"></span>
+                ) : null}
               </Box>
             ))}
           </Stack>

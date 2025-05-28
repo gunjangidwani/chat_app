@@ -5,3 +5,66 @@
   display: flex;
   background-color: aquamarine;
 }
+.typing-container {
+  align-items: center;
+  display: flex;
+  gap: 0.25rem;
+  border-radius: 9999px;
+  padding: 1rem;
+}
+
+.dot {
+  border-radius: 9999px;
+  height: 0.8rem;
+  width: 0.8rem;
+  background: black;
+  opacity: 0;
+  animation: blink 1s infinite;
+}
+
+.dot:nth-child(1) {
+  animation-delay: 0.3333s;
+}
+
+.dot:nth-child(2) {
+  animation-delay: 0.6666s;
+}
+
+.dot:nth-child(3) {
+  animation-delay: 0.9999s;
+}
+
+@keyframes blink {
+  50% {
+    opacity: 1;
+  }
+}
+
+.notiification-badge {
+  position: absolute;
+  top: 0;
+  right: 0px;
+  background: red;
+  font-size: 14px;
+  font-weight: 900;
+  border-radius: 50%;
+  height: 20px;
+  width: 20px;
+  color: white;
+}
+
+.scollable-div {
+  height: auto;
+  overflow-y: scroll;
+}
+
+.online-user {
+  position: absolute;
+  top: 0;
+  right: 0px;
+  background-color: #ff00e5;
+  border-radius: 50%;
+  height: 15px;
+  width: 15px;
+  color: white;
+}

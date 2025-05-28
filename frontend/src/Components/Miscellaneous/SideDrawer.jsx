@@ -21,7 +21,14 @@ import ChatLoading from "./ChatLoading";
 import UserListItem from "../UserAvatar/UserListItem";
 
 const SideDrawer = () => {
-  const { user, setSelectedChat, chats, setChats } = ChatState();
+  const {
+    user,
+    setSelectedChat,
+    chats,
+    setChats,
+    notification,
+    setNotification,
+  } = ChatState();
   const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(false);
@@ -59,7 +66,7 @@ const SideDrawer = () => {
       setLoadingChat(true);
       const config = {
         headers: {
-          // "Content-type": "application/json",
+          "Content-type": "application/json",
           Authorization: `Bearer ${user.token}`,
         },
       };
@@ -74,6 +81,11 @@ const SideDrawer = () => {
       setLoadingChat(false);
       console.log(error);
     }
+  };
+
+  const handleOpenChat = (openChat) => {
+    setSelectedChat(openChat.chat);
+    setNotification(notification.filter((chat) => chat._id !== openChat._id));
   };
 
   const leftDrawer = () => {
@@ -160,8 +172,30 @@ const SideDrawer = () => {
             <Menu.Trigger asChild>
               <Button fontSize="2xl" p={1} bg="white" color="black">
                 <i className="fa-solid fa-bell"></i>
+                <span className="notiification-badge ">
+                  {notification.length}
+                </span>
               </Button>
             </Menu.Trigger>
+            <Portal>
+              <Menu.Positioner>
+                <Menu.Content>
+                  <Menu.Item value="no-new-message">
+                    {!notification.length && "no new message"}
+                  </Menu.Item>
+                  {notification.map((newMsg, index) => (
+                    <Menu.Item
+                      key={newMsg._id - index}
+                      onClick={() => handleOpenChat(newMsg)}
+                    >
+                      {newMsg.chat.isGroupChat
+                        ? `New Message in ${newMsg.chat.chatName}`
+                        : `New Message from ${newMsg.sender.name}`}
+                    </Menu.Item>
+                  ))}
+                </Menu.Content>
+              </Menu.Positioner>
+            </Portal>
           </Menu.Root>
           <Menu.Root closeOnSelect={false}>
             <Menu.Trigger asChild>

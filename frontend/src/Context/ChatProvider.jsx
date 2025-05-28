@@ -8,6 +8,7 @@ const ChatProvider = ({ children }) => {
   const [user, setUser] = useState();
   const [notification, setNotification] = useState([]);
   const [chats, setChats] = useState();
+  const [fetchAgain, setFetchAgain] = useState(false);
 
   const navigate = useNavigate();
 
@@ -30,6 +31,8 @@ const ChatProvider = ({ children }) => {
         setNotification,
         chats,
         setChats,
+        fetchAgain,
+        setFetchAgain,
       }}
     >
       {children}

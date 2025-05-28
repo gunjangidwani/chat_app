@@ -5,6 +5,7 @@ import App from "./App.jsx";
 import { ChakraProvider, defaultSystem } from "@chakra-ui/react";
 import ChatProvider from "./Context/ChatProvider";
 import { BrowserRouter as Router } from "react-router-dom";
+import SocketProvider from "./Context/SocketProvider";
 
 createRoot(document.getElementById("root")).render(
   // <StrictMode>
@@ -15,9 +16,11 @@ createRoot(document.getElementById("root")).render(
     }}
   >
     <ChatProvider>
-      <ChakraProvider value={defaultSystem}>
-        <App />
-      </ChakraProvider>
+      <SocketProvider>
+        <ChakraProvider value={defaultSystem}>
+          <App />
+        </ChakraProvider>
+      </SocketProvider>
     </ChatProvider>
   </Router>
   // </StrictMode>
