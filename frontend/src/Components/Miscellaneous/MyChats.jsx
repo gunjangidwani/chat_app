@@ -6,13 +6,20 @@ import ChatLoading from "./ChatLoading";
 import { getSender, getSenderFull } from "../../config/helper";
 import GroupChatModal from "./GroupChatModal";
 import { useSocketContext } from "../../Context/SocketProvider";
+import { toaster } from "../ui/toaster";
 
 const MyChats = () => {
   const [loggedUser, setLoggedUser] = useState();
-  const { selectedChat, setSelectedChat, user, chats, setChats, fetchAgain } =
-    ChatState();
+  const {
+    selectedChat,
+    setSelectedChat,
+    user,
+    chats,
+    setChats,
+    fetchAgain,
+    setNotification,
+  } = ChatState();
   const { onlineUsers } = useSocketContext();
-  console.log(onlineUsers, chats, "......noti");
   useEffect(() => {
     setLoggedUser(JSON.parse(localStorage.getItem("userInfo")));
     fetchChats();
@@ -28,8 +35,19 @@ const MyChats = () => {
 
       const { data } = await axios.get(`/api/chat`, config);
       setChats(data);
+      if (data.length) {
+        let unReadCount = data.filter(
+          (chat) =>
+            chat.latestMessageReadBy?.length > 0 &&
+            !chat.latestMessageReadBy.includes(user._id)
+        );
+        setNotification(unReadCount);
+      }
     } catch (error) {
-      console.log(error);
+      toaster.create({
+        description: error.message,
+        type: "error",
+      });
     }
   };
 

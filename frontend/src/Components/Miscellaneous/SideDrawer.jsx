@@ -19,6 +19,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import ChatLoading from "./ChatLoading";
 import UserListItem from "../UserAvatar/UserListItem";
+import { toaster } from "../ui/toaster";
 
 const SideDrawer = () => {
   const {
@@ -41,7 +42,6 @@ const SideDrawer = () => {
     navigate("/");
   };
   const handleSearch = async () => {
-    console.log(search);
     // handle error with toast
     if (!search) return;
     try {
@@ -57,7 +57,10 @@ const SideDrawer = () => {
       setSearchResult(data);
     } catch (error) {
       setLoading(false);
-      console.log(error);
+      toaster.create({
+        description: error.message,
+        type: "error",
+      });
     }
   };
 
@@ -79,12 +82,16 @@ const SideDrawer = () => {
       setOpenDrawer(false);
     } catch (error) {
       setLoadingChat(false);
-      console.log(error);
+
+      toaster.create({
+        description: error.message,
+        type: "error",
+      });
     }
   };
 
   const handleOpenChat = (openChat) => {
-    setSelectedChat(openChat.chat);
+    setSelectedChat(openChat.chat ? openChat.chat : openChat);
     setNotification(notification.filter((chat) => chat._id !== openChat._id));
   };
 
@@ -133,10 +140,6 @@ const SideDrawer = () => {
                 )}
                 {loadingChat && <Spinner ml="auto" display="flex" />}
               </Drawer.Body>
-              <Drawer.Footer>
-                <Button variant="outline">Cancel</Button>
-                <Button>Save</Button>
-              </Drawer.Footer>
               <Drawer.CloseTrigger asChild>
                 <CloseButton size="sm" />
               </Drawer.CloseTrigger>
@@ -165,7 +168,7 @@ const SideDrawer = () => {
           {leftDrawer()}
         </Tooltip>
         <Text fontSize="2xl" fontFamily="Work sans">
-          Talk-A-Tive
+          ConvoCloud
         </Text>
         <div>
           <Menu.Root>
@@ -188,9 +191,13 @@ const SideDrawer = () => {
                       key={newMsg._id - index}
                       onClick={() => handleOpenChat(newMsg)}
                     >
-                      {newMsg.chat.isGroupChat
+                      {newMsg.chat?.isGroupChat
                         ? `New Message in ${newMsg.chat.chatName}`
-                        : `New Message from ${newMsg.sender.name}`}
+                        : `New Message from ${
+                            newMsg?.sender?.name
+                              ? newMsg?.sender?.name
+                              : newMsg?.latestMessage.sender?.name
+                          }`}
                     </Menu.Item>
                   ))}
                 </Menu.Content>

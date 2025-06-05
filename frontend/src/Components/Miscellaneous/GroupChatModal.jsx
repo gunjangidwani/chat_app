@@ -17,6 +17,7 @@ import axios from "axios";
 import UserListItem from "../UserAvatar/UserListItem";
 import UserBadgeItem from "../UserAvatar/UserBadgeItem";
 import { ChatState } from "../../Context/ChatProvider";
+import { toaster } from "../ui/toaster";
 const GroupChatModal = ({ children, user }) => {
   const [open, setOpen] = useState(false);
   const [groupChatName, setGroupChatName] = useState("");
@@ -42,12 +43,18 @@ const GroupChatModal = ({ children, user }) => {
       setLoading(false);
       setSearchResult(data);
     } catch (error) {
-      console.log(error);
+      toaster.create({
+        description: error.message,
+        type: "error",
+      });
     }
   };
   const handleSubmit = async () => {
     if (!groupChatName || !selectedUsers) {
-      console.log("please fill all the fields");
+      toaster.create({
+        description: "Please fill all the fields",
+        type: "error",
+      });
       return;
     }
     try {
@@ -69,12 +76,18 @@ const GroupChatModal = ({ children, user }) => {
       setChats([data, ...chats]);
       setOpen(false);
     } catch (error) {
-      console.log(error);
+      toaster.create({
+        description: error.message,
+        type: "error",
+      });
     }
   };
   const handleGroup = (userToAdd) => {
     if (selectedUsers.includes(userToAdd)) {
-      console.log("user Already added");
+      toaster.create({
+        description: "User alrady Added",
+        type: "info",
+      });
     } else {
       setSelectedUsers([...selectedUsers, userToAdd]);
     }
@@ -107,9 +120,7 @@ const GroupChatModal = ({ children, user }) => {
                 display="flex"
                 justifyContent="center"
               >
-                {/* <Dialog.Title p="10" fontSize={40}> */}
                 Create Group Chat
-                {/* </Dialog.Title> */}
               </Dialog.Header>
               <Dialog.Body
                 // fontSize={40}

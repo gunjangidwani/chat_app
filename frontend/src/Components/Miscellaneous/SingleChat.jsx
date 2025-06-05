@@ -16,6 +16,7 @@ import axios from "axios";
 import ScrollableChat from "./ScrollableChat";
 // import io from "socket.io-client";
 import { useSocketContext } from "../../Context/SocketProvider";
+import { toaster } from "../ui/toaster";
 // const ENDPOINT = "http://localhost:5173";
 // var socket,
 var selectedChatCompare;
@@ -39,7 +40,6 @@ const SingleChat = () => {
   const [socketConnected, setSocketConnected] = useState(false);
   const [typing, setTyping] = useState(false);
   const [istyping, setIsTyping] = useState(false);
-  console.log(istyping, "istyping");
 
   // useEffect(() => {
   // socket = io(ENDPOINT);
@@ -78,7 +78,10 @@ const SingleChat = () => {
       } catch (error) {
         setMessageLoader(false);
 
-        console.log(error);
+        toaster.create({
+          description: error.message,
+          type: "error",
+        });
       }
     }
   };
@@ -130,7 +133,10 @@ const SingleChat = () => {
         socket.emit("new message", data);
         setMessages([...messages, data]);
       } catch (error) {
-        console.log(error);
+        toaster.create({
+          description: error.message,
+          type: "error",
+        });
       }
     }
   };

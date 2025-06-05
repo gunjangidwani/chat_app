@@ -1,56 +1,66 @@
 import React, { useState, useEffect } from "react";
-import {
-  VStack,
-  Field,
-  Input,
-  Button,
-  InputGroup,
-  Alert,
-} from "@chakra-ui/react";
+import { VStack, Field, Input, Button, InputGroup } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { toaster } from "../ui/toaster";
+import { LocalStorage, requestHandler } from "../../config/utils";
+import { loginUser } from "../../Api";
 const Login = () => {
   const [email, setEmail] = useState();
   const [password, setPassword] = useState();
   const [show, setShow] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [showToast, setShowToast] = useState(false);
-  const [toastStatus, setToastStatus] = useState();
-  const [toastMessage, setToastMessage] = useState();
   const navigate = useNavigate();
-
-  useEffect(() => {
-    if (showToast) {
-      setTimeout(() => {
-        setShowToast(false);
-        setToastStatus();
-        setToastMessage();
-      }, 4000);
-    }
-  }, [showToast]);
 
   const submitHandler = async () => {
     if (!email || !password) {
-      setShowToast(true);
-      setToastStatus("error");
-      setToastMessage("Please fill all the details");
+      toaster.create({
+        description: "Email and password are required",
+        type: "error",
+      });
       return;
     }
-    const config = {
-      headers: {
-        "Content-type": "application/json",
-      },
-    };
-    const data = await axios.post(
-      "api/user/login",
-      { email, password },
-      config
-    );
-    if (data.data) {
-      localStorage.setItem("userInfo", JSON.stringify(data.data));
-      navigate("/chats");
+    try {
+      const data = { email, password };
+      await requestHandler(
+        async () => await loginUser(data),
+        setLoading,
+        (res) => {
+          const { data } = res;
+          if (data) {
+            LocalStorage.set("userInfo", data);
+            LocalStorage.set("token", data.token);
+            navigate("/chats");
+          }
+        },
+        () => {
+          toaster.create({
+            description: "Error in Login",
+            type: "error",
+          });
+        }
+      );
+      // const config = {
+      //   headers: {
+      //     "Content-type": "application/json",
+      //   },
+      // };
+      // const data = await axios.post(
+      //   "api/user/login",
+      //   { email, password },
+      //   config
+      // );
+      // if (data.data) {
+      //   localStorage.setItem("userInfo", JSON.stringify(data.data));
+      //   navigate("/chats");
+      // }
+    } catch (error) {
+      console.log(error);
+      toaster.create({
+        description: "Error in Login",
+        type: "error",
+      });
     }
-    console.log(data, "res");
   };
 
   return (
@@ -109,12 +119,6 @@ const Login = () => {
       >
         Get Guest User Credentials
       </Button>
-      {showToast && (
-        <Alert.Root status={toastStatus} inline={false}>
-          <Alert.Indicator />
-          <Alert.Title>{toastMessage}</Alert.Title>
-        </Alert.Root>
-      )}
     </VStack>
   );
 };

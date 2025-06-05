@@ -2,6 +2,7 @@ const express = require('express');
 const chats = require('./data/data');
 const app = express();
 const http = require("http");
+const cors = require("cors");
 app.use(express.json()); // to accept Json  Data
 
 const dotenv = require("dotenv");
@@ -19,7 +20,14 @@ const httpServer = http.createServer(app);
 app.get("/", (req, res) => {
   res.send("API is running");
 });
-
+app.use(
+  cors({
+    origin: "http://localhost:5173", // Your React app's origin
+    methods: "GET,POST,PUT,DELETE",
+    credentials: true,
+    // allowedHeaders: "Content-Type,Authorization, Access-Control-Allow-Origin",
+  })
+);
 app.use("/api/user", userRoutes);
 app.use("/api/chat", chatRoutes);
 app.use("/api/message", messageRoutes);

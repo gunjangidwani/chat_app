@@ -17,6 +17,7 @@ import axios from "axios";
 import UserListItem from "../UserAvatar/UserListItem";
 import UserBadgeItem from "../UserAvatar/UserBadgeItem";
 import { ChatState } from "../../Context/ChatProvider";
+import { toaster } from "../ui/toaster";
 
 const UpdatGroupChatModal = () => {
   const {
@@ -65,8 +66,10 @@ const UpdatGroupChatModal = () => {
       setRenameLoading(false);
     } catch (error) {
       setRenameLoading(false);
-
-      console.log(error);
+      toaster.create({
+        description: error.message,
+        type: "error",
+      });
     }
   };
 
@@ -85,12 +88,18 @@ const UpdatGroupChatModal = () => {
       setLoading(false);
       setSearchResult(data);
     } catch (error) {
-      console.log(error);
+      toaster.create({
+        description: error.message,
+        type: "error",
+      });
     }
   };
   const removeUser = async (user1) => {
     if (selectedChat.groupAdmin._id !== user._id && user1._id !== user._id) {
-      console.log("Admin user can Remove user");
+      toaster.create({
+        description: "Admin can remove user ",
+        type: "error",
+      });
       return;
     }
 
@@ -119,17 +128,26 @@ const UpdatGroupChatModal = () => {
       setOpen(false);
       setFetchAgain(!fetchAgain);
     } catch (error) {
-      console.log(error);
+      toaster.create({
+        description: error.message,
+        type: "error",
+      });
     }
   };
   const handleAddUser = async (user1) => {
     if (selectedChat.users.find((sel) => sel._id === user1._id)) {
-      console.log("user already exist");
+      toaster.create({
+        description: "User already exist",
+        type: "info",
+      });
       return;
     }
 
     if (selectedChat.groupAdmin._id !== user._id) {
-      console.log("Admin user can add user");
+      toaster.create({
+        description: "Only admin can add User",
+        type: "error",
+      });
       return;
     }
 
@@ -159,7 +177,10 @@ const UpdatGroupChatModal = () => {
       setLoading(false);
     } catch (error) {
       setLoading(false);
-      console.log(error);
+      toaster.create({
+        description: error.message,
+        type: "error",
+      });
     }
   };
   return (

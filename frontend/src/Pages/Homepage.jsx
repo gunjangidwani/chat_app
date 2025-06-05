@@ -32,7 +32,7 @@ const Homepage = () => {
         color="black"
       >
         <Text fontFamily="work sans" fontSize="4xl">
-          Talk-a-Tive
+          ConvoCloud
         </Text>
       </Box>
       <Box bg={"white"} w={"100%"} borderRadius="lg" p="4">
@@ -49,7 +49,6 @@ const Homepage = () => {
             <Tabs.Trigger
               display="flex"
               justifyContent="center"
-              centerContent
               w="50%"
               value="first"
             >
@@ -58,7 +57,6 @@ const Homepage = () => {
             <Tabs.Trigger
               display="flex"
               justifyContent="center"
-              centerContent
               w="50%"
               value="second"
             >

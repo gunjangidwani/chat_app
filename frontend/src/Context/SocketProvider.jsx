@@ -8,6 +8,7 @@ const SocketProvider = ({ children }) => {
   const { user } = ChatState();
   const [socket, setSocket] = useState();
   const [onlineUsers, setOnlineUsers] = useState([]);
+  const [socketConnected, setSocketConnected] = useState(false);
   const ENDPOINT = "http://localhost:5173";
   useEffect(() => {
     if (user?._id) {

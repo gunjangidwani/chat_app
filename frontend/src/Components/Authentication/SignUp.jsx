@@ -1,15 +1,8 @@
-import {
-  VStack,
-  Field,
-  Input,
-  Button,
-  InputGroup,
-  Alert,
-  Box,
-} from "@chakra-ui/react";
+import { VStack, Field, Input, Button, InputGroup } from "@chakra-ui/react";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { toaster } from "../ui/toaster";
 
 const SignUp = () => {
   const [name, setName] = useState();
@@ -19,22 +12,21 @@ const SignUp = () => {
   const [pic, setPic] = useState();
   const [show, setShow] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [showToast, setShowToast] = useState(false);
-  const [toastStatus, setToastStatus] = useState();
-  const [toastMessage, setToastMessage] = useState();
   const navigate = useNavigate();
 
-  const submitHandler = () => {
+  const submitHandler = async () => {
     if (!name || !email || !password || !confirmPassword) {
-      setShowToast(true);
-      setToastStatus("error");
-      setToastMessage("Please fill all the details");
+      toaster.create({
+        description: "Please fill all the fields",
+        type: "error",
+      });
       return;
     }
     if (password !== confirmPassword) {
-      setShowToast(true);
-      setToastStatus("error");
-      setToastMessage("Password do not match");
+      toaster.create({
+        description: "Password do not match",
+        type: "error",
+      });
       return;
     }
     try {
@@ -44,18 +36,23 @@ const SignUp = () => {
           "Content-type": "application/json",
         },
       };
-      const data = axios.post(
+      const data = await axios.post(
         "/api/user",
         { name, email, password, pic },
         config
       );
-      if (data.status === 200) {
+      if (data.status === 201) {
         localStorage.setItem("userInfo", JSON.stringify(data.data));
         navigate("/chats");
-        console.log(data);
       }
       setLoading(false);
-    } catch (error) {}
+    } catch (error) {
+      setLoading(false);
+      toaster.create({
+        description: error.message,
+        type: "error",
+      });
+    }
   };
 
   const uploadCloudaryPic = (file) => {
@@ -72,41 +69,29 @@ const SignUp = () => {
         })
           .then((res) => res.json())
           .then((data) => {
-            setShowToast(true);
-            setToastStatus("success");
-            setToastMessage("Successfully uploaded image");
+            toaster.create({
+              description: "Successfully uploaded image",
+              type: "success",
+            });
             setPic(data.url.toString());
-            console.log(data.url.toString());
             setLoading(false);
           })
           .catch((err) => {
-            setShowToast(true);
-            setToastStatus("error");
-            setToastMessage("Please Upload a image file ");
-            console.log(err);
+            toaster.create({
+              description: "Please Upload a image file ",
+              type: "error",
+            });
             setLoading(false);
           });
       }
     } else {
-      toast({
-        title: "Please Select an Image!",
-        status: "warning",
-        duration: 5000,
-        isClosable: true,
-        position: "bottom",
+      toaster.create({
+        description: "Please Select an Image!",
+        type: "warning",
       });
-      console.log("File not found");
       setLoading(false);
     }
   };
-
-  useEffect(() => {
-    if (showToast) {
-      setTimeout(() => {
-        setShowToast(false);
-      }, 4000);
-    }
-  }, [showToast]);
 
   return (
     <VStack spacing="5px">
@@ -204,12 +189,6 @@ const SignUp = () => {
       >
         Sign up
       </Button>
-      {showToast && (
-        <Alert.Root status={toastStatus} inline={false}>
-          <Alert.Indicator />
-          <Alert.Title>{toastMessage}</Alert.Title>
-        </Alert.Root>
-      )}
     </VStack>
   );
 };

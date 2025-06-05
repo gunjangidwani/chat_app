@@ -36,6 +36,7 @@ const registerUser = asyncHandler(async (req, res) => {
 });
 
 const authUser = asyncHandler(async (req, res) => {
+  console.log(req, "login request");
   const { email, password } = req.body;
   if (!email || !password) {
     res.status(400);
@@ -71,8 +72,6 @@ const allUser = asyncHandler(async (req, res) => {
     : {};
   const users = await User.find(keyword).find({ _id: { $ne: req.user._id } });
 
-  res.send(users)
-
-  console.log(keyword);
+  res.send(users);
 });
 module.exports = { registerUser, authUser, allUser };
