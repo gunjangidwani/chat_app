@@ -24,7 +24,6 @@ apiClient.interceptors.request.use(
     return Promise.reject(error);
   }
 );
-console.log(apiClient);
 
 export const loginUser = (data: { email: string; password: string }) => {
   return apiClient.post("/user/login", data);
